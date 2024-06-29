@@ -1,12 +1,10 @@
+<img width="779" alt="demo" src="https://github.com/capjamesg/web-reader/assets/37276661/610188cb-d035-40dc-8990-a1b7b908fa2f">
+
 # Web Reader
 
 A minimal web reader for following RSS feeds.
 
-This web reader is designed to be run at specific intervals of the day.
-
-For example, you can poll feeds every hour, or every day.
-
-This project is intentionally not designed to be a real-time reader.
+This project is intentionally not designed to be a real-time reader. Rather, it is designed to retrieve content in intervals (i.e. every hour, every day).
 
 Web Reader supports the following feed formats:
 
@@ -14,6 +12,8 @@ Web Reader supports the following feed formats:
 - Atom
 - JSON Feed
 - microformats2
+
+Only posts published in the last two days will be displayed in the feed reader.
 
 ## Installation
 

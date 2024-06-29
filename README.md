@@ -2,7 +2,7 @@
 
 # Web Reader
 
-A minimal web reader for following RSS feeds.
+A minimal web reader for following web feeds.
 
 This project is intentionally not designed to be a real-time reader. Rather, it is designed to retrieve content in intervals (i.e. every hour, every day).
 

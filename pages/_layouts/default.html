@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>feed reader</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <meta name="robots" content="noindex">
+
+    <style>
+        :root {
+            --primary-color: orange;
+        }
+        * {
+            box-sizing: border-box;
+            font-family: 'PT Serif';
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            border-top: 0.5em solid var(--primary-color);
+        }
+        main {
+            max-width: 35em;
+            margin: auto;
+            padding: 1em;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        h3 {
+            margin: 0;
+        }
+        .subcontent {
+            margin-top: 0.25em;
+            color: #535353;
+        }
+        a {
+            text-decoration: none;
+            color: black;
+        }
+        a:hover {
+            text-decoration: none;
+            color: var(--primary-color);
+        }
+        a:focus {
+            outline: 2px solid var(--primary-color);
+        }
+        .mascot {
+            float: right;
+            max-height: 5em;
+        }
+        .hn {
+            margin-bottom: 1em;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        {{ content }}
+    </main>
+</body>
+</html>

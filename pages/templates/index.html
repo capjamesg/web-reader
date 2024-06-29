@@ -1,0 +1,19 @@
+---
+layout: default
+---
+
+<h1>{{ site.build_timestamp | transform_date_to_day_name_date }}</h1>
+<ul>
+    {% for post in site.feed %}
+    <li>
+        {% if post.title and post.date_published > site.date_as_str %}
+            <h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
+            {% if post.authors and post.authors[0].name %}
+                <p class="subcontent">{{ post.authors[0].name }}</p>
+            {% else %}
+                <p class="subcontent">{{ post.domain }}</p>
+            {% endif %}
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>

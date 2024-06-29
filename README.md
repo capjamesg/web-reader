@@ -41,6 +41,10 @@ To generate a site from the posts, run:
 aurora build
 ```
 
+Your feed will be available at `_site/index.html`.
+
+This project uses the [Aurora](https://github.com/capjamesg/aurora) static site generator to generate web pagea. You can customise the site to your requirements. Reference material for Aurora is available on the [Aurora documentation website](https://aurora.jamesg.blog).
+
 ## License
 
 This project is licensed under an [MIT license](LICENSE).

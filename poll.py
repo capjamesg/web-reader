@@ -11,7 +11,7 @@ from dateutil import parser
 
 USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
 
-today = (datetime.datetime.now()  - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+today = datetime.datetime.now().strftime("%Y-%m-%d")
 
 with open("feeds.txt", "r") as f:
     feeds = f.read().splitlines()

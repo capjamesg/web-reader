@@ -3,13 +3,15 @@ import requests
 from granary import atom, jsonfeed, microformats2, rss
 import json
 from tqdm import tqdm
+import concurrent.futures
 from urllib.parse import urlparse
 import datetime
 import os
+from dateutil import parser
 
 USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
 
-today = datetime.datetime.now().strftime("%Y-%m-%d")
+today = (datetime.datetime.now()  - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
 
 with open("feeds.txt", "r") as f:
     feeds = f.read().splitlines()
@@ -23,6 +25,7 @@ if os.path.exists("pages/_data/feed.json"):
 
         print("Found", len(existing_posts), "existing posts")
 else:
+    existing_feed = []
     existing_posts = []
 
 FEED_IDENTIFICATION = {
@@ -39,24 +42,24 @@ results = []
 
 CONVERSION_FUNCTION = jsonfeed.activities_to_jsonfeed
 
-for feed in tqdm(feeds):
+def poll_feed(feed):
     try:
         resp = requests.get(
             feed, headers={"User-Agent": USER_AGENT}, allow_redirects=True, timeout=30
         )
     except requests.RequestException:
         print("Failed to fetch", feed)
-        continue
+        return []
 
     if resp.status_code != 200:
         print("Failed to fetch", feed, "with status code", resp.status_code)
-        continue
+        return []
 
     content_type = resp.headers.get("Content-Type", "").split(";")[0].split("/")[1]
 
     if content_type not in FEED_IDENTIFICATION:
         print("Unsupported feed type", content_type)
-        continue
+        return []
 
     if content_type in ["json", "feed+json"]:
         activities = CONVERSION_FUNCTION(FEED_IDENTIFICATION[content_type](resp.json())[0])
@@ -67,23 +70,18 @@ for feed in tqdm(feeds):
 
     if not items:
         print("No items found in", feed)
-        continue
-
-    domain = urlparse(feed).netloc
+        return []
 
     for item in items:
-        item["domain"] = domain
-        
-        if not item.get("date_published"):
-            item["date_published"] = today
-        
-        # if not valid datestamp, replace
-        try:
-            datetime.datetime.strptime(item["date_published"], "%Y-%m-%d")
-        except ValueError:
-            item["date_published"] = today
+        if not item.get("url"):
+            item["url"] = feed
 
-        item["date_published"] = item["date_published"].split("T")[0].replace("-", "")
+        item["domain"] = urlparse(item.get("url")).netloc
+
+        try:
+            item["date_published"] = parser.parse(item.get("date_published", None)).strftime("%Y-%m-%d")
+        except:
+            item["date_published"] = today
 
         if item.get("content_html"):
             del item["content_html"]
@@ -92,7 +90,16 @@ for feed in tqdm(feeds):
 
     print("Found", len(items), "new items in", feed)
 
-    results.extend(activities.get("items", []))
+    return items
+
+with concurrent.futures.ThreadPoolExecutor() as executor:
+    results = list(executor.map(poll_feed, feeds))
+
+results = [item for sublist in results for item in sublist]
+
+for item in existing_feed:
+    if item.get("id") not in existing_posts:
+        results.append(item)
 
 results = sorted(results, key=lambda x: x.get("date", ""), reverse=True)
 

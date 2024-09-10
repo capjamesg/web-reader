@@ -1,0 +1,56 @@
+name: Python package
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 1 * * *'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.12]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip git+https://github.com/capjamesg/aurora
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Poll feeds
+        run: |
+          python3 poll.py
+      - name: Build main site
+        env:  
+          SITE_ENV: ${{ secrets.SITE_ENV }}  
+        run: |
+          aurora build
+
+      - name: rsync deployments
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avzr
+          path: "./_site/*"
+          remote_path: ${{ secrets.PATH }}
+          remote_host: ${{ secrets.SERVER_HOST }}
+          remote_user: ${{ secrets.SERVER_USERNAME }}
+          remote_key: ${{ secrets.KEY }}
+
+      - name: Commit pages
+    
+        run: |
+          git config --global user.email ""
+          git config --global user.name ""
+          git add pages/_data/
+          git commit -m "Update pages"
+          git push

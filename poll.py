@@ -1,4 +1,4 @@
-
+import indieweb_utils
 import requests
 from granary import atom, jsonfeed, microformats2, rss
 import json
@@ -56,6 +56,20 @@ def poll_feed(feed):
         return []
 
     content_type = resp.headers.get("Content-Type", "").split(";")[0].split("/")[1]
+
+    if "html" in content_type:
+        feeds = indieweb_utils.discover_web_page_feeds(feed)
+
+        if len(feeds) > 0:
+            try:
+                resp = requests.get(
+                    feeds[0].url, headers={"User-Agent": USER_AGENT}, allow_redirects=True, timeout=30
+                )
+
+                content_type = resp.headers.get("Content-Type", "").split(";")[0].split("/")[1]
+            except requests.RequestException:
+                print("Failed to fetch", feed)
+                return []
 
     if content_type not in FEED_IDENTIFICATION:
         print("Unsupported feed type", content_type)

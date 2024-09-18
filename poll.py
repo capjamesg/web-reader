@@ -90,6 +90,10 @@ def poll_feed(feed):
         if not item.get("url"):
             item["url"] = feed
 
+        # if url doesn't start with https://{domain}, add
+        if not item["url"].startswith("https://" + urlparse(item["url"]).netloc) and not item["url"].startswith("http://" + urlparse(item["url"]).netloc):
+            item["url"] = "https://" + urlparse(item["url"]).netloc + "/" + item["url"].lstrip("/")
+
         item["domain"] = urlparse(item.get("url")).netloc
 
         try:

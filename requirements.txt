@@ -2,3 +2,4 @@ granary
 requests
 aurora-ssg
 tqdm
+indieweb-utils
